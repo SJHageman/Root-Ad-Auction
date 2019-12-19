@@ -10,7 +10,8 @@ The main goal for this project was to train a classifier which indentifies impre
 
 ## Results
 Since the dataset consisted of auctions that Root Insurance won, I am unable to share details or descriptors of the data that was used for the project. However, I can discuss how our model performed in classifying impressions that will lead to clicks.
-### 'Click' Classifier
+### Building a 'Click' Classifier
+#### Encoding Categorical Data
 Most of the data provided in this dataset is categorical in nature, and this data needs to be turned into numerical values for models to train on it. There are several methods to accomplish this:
 
 * One Hot Encoding
@@ -25,8 +26,36 @@ The scikit-learn-contrib package [category_encoders](https://contrib.scikit-lear
 The encoding method used for our model is LeaveOneOut, which is tends to work well for high cardinality categorical data.  From the [documentation](https://contrib.scikit-learn.org/categorical-encoding/targetencoder.html):
 >For the case of categorical target: features are replaced with a blend of posterior probability of the target given particular categorical value and the prior probability of the target over all the training data.
 
+#### Standardization
 Once our categorical values are encoded, the data is then standardized such that the mean is removed and the variance is one.  This is done becuase we don't want to implicity weight our features, and by standardizing all of our features, we avoid this problem.
 
+#### Model
 The model we implemented is logistic regression with stochastic gradient descent (SGD). This was done using SGDClassifier from scikit-learn, and regularization was implemented by Elastic Net.  
 
+#### Training on Imbalanced Data
+One might be tempted to train a model on the data set now that it has been encoded and scaled, but this would yield an accurate model that is useless. This is clear when you look at the confusion matrx
 
+Essentially, always choosing 'no click' yields a very accurate model since ~95% of impressions don't yield a click. This is reflected in the recall score, which captures the ability of the model to find the positive samples ('clicks' in this case).
+
+One way to handle this is to not train your model on an unbalanced dataset. There are several methods to accomplish this, but they fall into the following categories:
+
+Under-sampling:
+
+* Random under-sampling
+* NearMiss
+* AllKNN
+* ... and others
+
+Over-sampling:
+
+* Random over-sampling
+* SMOTE
+* SMOTENC
+* ADASYN
+
+Combined over- and under-sampling:
+
+* SMOTEENN
+* SMOTETomek
+
+We implemented the two simplest ones, random over- and random under-sampling using the scikit-learn-contrib package [imbalanced-learn](https://imbalanced-learn.readthedocs.io/en/stable/index.html).
