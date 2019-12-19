@@ -10,10 +10,8 @@ The main goal for this project was to train a classifier which indentifies impre
 
 ## Results
 Since the dataset consisted of auctions that Root Insurance won, I am unable to share details or descriptors of the data that was used for the project. However, I can discuss how our model performed in classifying impressions that will lead to clicks.
-
-Most of the data provided in this dataset is categorical in nature, and this data needs to be turned into numerical values for models to train on it.
-
-There are several methods to accomplish this:
+### 'Click' Classifier
+Most of the data provided in this dataset is categorical in nature, and this data needs to be turned into numerical values for models to train on it. There are several methods to accomplish this:
 
 * One Hot Encoding
 * Hashing
@@ -21,7 +19,14 @@ There are several methods to accomplish this:
 * Ordinal
 * Binary
 * ... and many more
-The scikit-learn-contrib package [category_encoders](https://contrib.scikit-learn.org/categorical-encoding/) provides convenient transformers for many common methods.
 
-The encoding method used below is LeaveOneOut, which is tends to work well for high cardinality categorical data.  From the [documentation](https://contrib.scikit-learn.org/categorical-encoding/targetencoder.html):
+The scikit-learn-contrib package [category_encoders](https://contrib.scikit-learn.org/categorical-encoding/) provides convenient transformers for many of these common methods.
+
+The encoding method used for our model is LeaveOneOut, which is tends to work well for high cardinality categorical data.  From the [documentation](https://contrib.scikit-learn.org/categorical-encoding/targetencoder.html):
 >For the case of categorical target: features are replaced with a blend of posterior probability of the target given particular categorical value and the prior probability of the target over all the training data.
+
+Once our categorical values are encoded, the data is then standardized such that the mean is removed and the variance is one.  This is done becuase we don't want to implicity weight our features, and by standardizing all of our features, we avoid this problem.
+
+The model we implemented is logistic regression with stochastic gradient descent (SGD). This was done using SGDClassifier from scikit-learn, and regularization was implemented by Elastic Net.  
+
+
