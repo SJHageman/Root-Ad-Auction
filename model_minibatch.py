@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 from joblib import dump, load
 from sklearn.metrics import recall_score
 import psutil
+import matplotlib.colors as colors
 
 sys.path.append(os.getcwd())
 import load_file as lf
@@ -79,9 +80,11 @@ if limit_size:
 y = df.clicks.values
 X = df.drop(['clicks'], axis=1)
 loo = ce.LeaveOneOutEncoder()
-X = loo.fit_transform(X,y)
+X = loo.fit_transform(X,y, return_df=True)
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
+
+lf.save_df_HDF(X, fname = os.path.join(data_directory,  'X.h5'))
 
 if limit_size:
     X_threeweek = X[mask_threewks[limit_mask]]
@@ -127,7 +130,7 @@ X_pca = pca.fit_transform(X)
 print(X_pca.shape)
 #%%
 fig, ax = plt.subplots()
-ax.hist2d(X_pca[:,0],X_pca[:,1], bins=1000, cmap='inferno')
+ax.hist2d(X_pca[:,0],X_pca[:,1], bins=1000, cmap='inferno',norm=colors.LogNorm())
 #%%
 ##Let's try the simple minded way
 #y = df.clicks.values
@@ -228,9 +231,6 @@ ax.hist2d(X_pca[:,0],X_pca[:,1], bins=1000, cmap='inferno')
 # fig, ax = plt.subplots(1,3)
 # ax[0].scatter(X_pca[0:8000,0],X_pca[0:8000,1], c=y_train[0:8000], alpha=0.4, cmap='seismic')
 # ax[1].scatter(X_pca_under[0:80000,0],X_pca_under[0:80000,1], c=y_train_underRes[0:80000], alpha=0.4, cmap='seismic')
-
-
-
 
 
 

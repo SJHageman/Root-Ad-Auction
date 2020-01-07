@@ -238,6 +238,42 @@ def load_wrapper(data_dir, fname, **kwargs):
 	df = zc.shift_tz_wrap(df, style='careful') # get local times
 	df['hour'] = zc.local_hour(df) # create new column of local hour
 	return df
+
+def save_df_HDF(df, fname='df.h5'):
+    '''
+
+	Parameters
+	----------
+	df : Pandas DataFrame
+		Dataframe to be saved in HDF5 format
+	fname : string
+		Filename or path of dataframe to be saved
+
+	Returns
+	-------
+    None
+
+	'''
+    df.to_hdf(fname, key='df', mode='w')
+    return
+
+def load_df_HDF(fname='df.h5'):
+    '''
+
+	Parameters
+	----------
+	df : Pandas DataFrame
+		Dataframe to be saved in HDF5 format
+	fname : string
+		Filename or path of dataframe to be saved
+
+	Returns
+	-------
+    None
+
+	'''
+    df = pd.read_hdf(fname, 'df')
+    return df
 #%% example usage
 
 #fname = '2019-04-27.csv'
