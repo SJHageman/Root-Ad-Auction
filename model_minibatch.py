@@ -31,6 +31,60 @@ sys.path.append(os.getcwd())
 import load_file as lf
 import model_metrics as mm
 
+plt.style.use('vibrant')
+#import matplotlib as mpl
+plt.rcParams['figure.dpi'] = 240
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
+SMALL_SIZE = 11
+MEDIUM_SIZE = 12
+BIGGER_SIZE = 12
+
+#plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=BIGGER_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+#plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
+#plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
+def set_size(width, fraction=1, aspect=-1):
+#    """ Set aesthetic figure dimensions to avoid scaling in latex.
+#
+#    Parameters
+#    ----------
+#    width: float
+#            Width in pts
+#    fraction: float
+#            Fraction of the width which you wish the figure to occupy
+#
+#    Returns
+#    -------
+#    fig_dim: tuple
+#            Dimensions of figure in inches
+#	"""
+	# Width of figure
+	fig_width_pt = width * fraction
+
+    # Convert from pt to inches
+	inches_per_pt = 1 / 72.27
+
+    # Golden ratio to set aesthetic figure height
+	golden_ratio = (5**.5 - 1) / 2
+
+    # Figure width in inches
+	fig_width_in = fig_width_pt * inches_per_pt
+	# Figure height in inches
+	if aspect==-1:
+		fig_height_in = fig_width_in * golden_ratio
+	else:
+		fig_height_in = fig_width_in * aspect
+	fig_dim = (fig_width_in, fig_height_in)
+
+	return fig_dim
+width =  433.62001
+
 # HINT
 # Set flag to limit the size of dataframe that is used based on amount of total
 # amount of RAM that is available on this machine.
@@ -77,14 +131,21 @@ if limit_size:
     limit_mask = np.logical_or(mask_threewks.values, mask_lastweek.values)
     df = df[limit_mask]
 
-y = df.clicks.values
+y = df.clicks
 X = df.drop(['clicks'], axis=1)
 loo = ce.LeaveOneOutEncoder()
-X = loo.fit_transform(X,y, return_df=True)
+X = loo.fit_transform(X.values,y.values, return_df=False)
 scaler = StandardScaler()
-X = scaler.fit_transform(X)
-
+X = pd.DataFrame(scaler.fit_transform(X), index=df.index, \
+                 columns=df.columns[df.columns!='clicks'])
+print('Beginning saving X...')
+start = time.time()
 lf.save_df_HDF(X, fname = os.path.join(data_directory,  'X.h5'))
+# lf.load_df_HDF(fname = os.path.join(data_directory,  'X.h5'))
+end = time.time()
+elapsed = end - start
+print('Finish saving X')
+print(f'{elapsed:.2f} seconds to save file')
 
 if limit_size:
     X_threeweek = X[mask_threewks[limit_mask]]
@@ -129,8 +190,16 @@ pca = PCA(n_components = 2)
 X_pca = pca.fit_transform(X)
 print(X_pca.shape)
 #%%
-fig, ax = plt.subplots()
-ax.hist2d(X_pca[:,0],X_pca[:,1], bins=1000, cmap='inferno',norm=colors.LogNorm())
+fn = os.path.join(os.getcwd(), 'PCA_2d.pdf')
+fig, ax = plt.subplots(figsize=set_size(width, aspect=-1))
+hist = ax.hist2d(X_pca[:,0],X_pca[:,1], bins=1000, cmap='inferno',\
+          norm=colors.LogNorm(), rasterized=True)
+fig.colorbar(hist[-1], ax=ax, pad=0.04)
+ax.set_xlabel('X component')
+ax.set_ylabel('Y component')
+ax.set_title('PCA: 2 components')
+fig.tight_layout()
+fig.savefig(fn)
 #%%
 ##Let's try the simple minded way
 #y = df.clicks.values
