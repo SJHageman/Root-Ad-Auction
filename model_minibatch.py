@@ -94,10 +94,10 @@ if mem.total>threshold:
     limit_size=False
 else:
     limit_size=True
-
 #%%
 #Load all gzip data into large dataframe
-data_directory = r'C:\Data Science\Root Ad Data\Data\csvs'
+# data_directory = r'C:\Data Science\Root Ad Data\Data\csvs'
+data_directory = r'K:\Data Science\Root Ad Data\Data'
 #Load ALL of the data
 df = pd.DataFrame()
 for f in tqdm(glob.glob(os.path.join(data_directory, '*.gzip'))):
@@ -141,6 +141,7 @@ X = pd.DataFrame(scaler.fit_transform(X), index=df.index, \
 print('Beginning saving X...')
 start = time.time()
 lf.save_df_HDF(X, fname = os.path.join(data_directory,  'X.h5'))
+lf.save_df_HDF(y, fname = os.path.join(data_directory,  'y.h5'))
 # lf.load_df_HDF(fname = os.path.join(data_directory,  'X.h5'))
 end = time.time()
 elapsed = end - start
