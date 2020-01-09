@@ -195,8 +195,10 @@ fig, ax = plt.subplots(figsize=set_size(width, aspect=-1))
 hist = ax.hist2d(X_pca[:,0],X_pca[:,1], bins=1000, cmap='inferno',\
           norm=colors.LogNorm(), rasterized=True)
 fig.colorbar(hist[-1], ax=ax, pad=0.04)
-ax.set_xlabel('X component')
-ax.set_ylabel('Y component')
+ax.set_xlabel('X component, varience ratio: '\
+              +f'{pca.explained_variance_ratio_[0]:.3f}')
+ax.set_ylabel('Y component, varience ratio: '\
+              +f'{pca.explained_variance_ratio_[1]:.3f}')
 ax.set_title('PCA: 2 components')
 fig.tight_layout()
 fig.savefig(fn)
