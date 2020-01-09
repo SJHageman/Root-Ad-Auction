@@ -9,7 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-plt.rcParams['figure.dpi'] = 240 # fix high-dpi display scaling issues (only if you have a 4k monitor)
+plt.rcParams['figure.dpi'] = 240 # fix high-dpi display scaling issues
 
 sys.path.append(os.getcwd()) # add cwd to path
 
@@ -21,7 +21,7 @@ import file_reshaper as fr # file reshaper
 zc = ZC(fdir='') # initialize zip code class
 
 ### define your data directory
-data_dir = r'C:\Data Science\Root Ad Data\Data\csvs'
+data_dir = r'K:\Data Science\Root Ad Data\Data'
 
 ### convert files to gzip (skip if you already have gzips)
 fr.reshape_files(data_dir=data_dir) # this will take 15-20 minutes
